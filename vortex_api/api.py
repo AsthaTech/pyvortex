@@ -1,4 +1,5 @@
 import requests
+import csv
 
 class AsthaTradeVortexAPI:
 
@@ -68,7 +69,6 @@ class AsthaTradeVortexAPI:
         response = requests.request(method, url, headers=headers, json=data)
 
         response.raise_for_status()
-        print(response.text)
         return response.json()
     
     def _make_unauth_request(self, method: str, endpoint: str, data: dict = None) -> dict:
@@ -84,10 +84,8 @@ class AsthaTradeVortexAPI:
             dict: Dictionary containing the response data from the API.
         """
         headers = {"Content-Type": "application/json", "x-api-key": self.api_key}
-        print(headers)
         url = self.base_url + endpoint
         response = requests.request(method, url, headers=headers, json=data)
-
         response.raise_for_status()
         return response.json()
 
@@ -112,6 +110,24 @@ class AsthaTradeVortexAPI:
         }
         res = self._make_unauth_request("POST", endpoint, data=data)
         self._setup_client_code(login_object=res)
+    
+    def download_master(self) -> dict:
+        """
+        Download list of all available instruments and their details across all exchanges
+
+        Returns:
+            dict: CSV Array of all instruments. The first row contains headers
+        """
+        endpoint = "/data/instruments"
+        bearer_token = f"Bearer {self.access_token}"
+        headers = {"Content-Type": "application/json", "Authorization": bearer_token}
+        with requests.Session() as s: 
+            download = s.get(url=self.base_url + endpoint,headers=headers)
+            decoded_content = download.content.decode('utf-8')
+            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+            my_list = list(cr)
+            return my_list
+
     def place_order(self,exchange: str, token: int, transaction_type: str, product: str, variety: str, 
                 quantity: int, price: float, trigger_price: float, disclosed_quantity: int, validity: str, 
                 validity_days: int, is_amo: bool) -> dict:
