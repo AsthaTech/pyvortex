@@ -1,0 +1,8 @@
+myenv/*
+docs
+*.egg*
+tests
+vortex_api/__pycache__
+requirements.txt
+build
+dist

@@ -1,0 +1,8 @@
+__name__ = "vortex_api"
+__description__ = "Vortex APIs to place orders in AsthaTrade Flow application"
+__url__ = "https://vortex.asthatrade.com"
+__download_url__ = "https://github.com/AsthaTech/pyvortex"
+__version__ = "1.0.2"
+__author__ = "Astha Credit & Securities Pvt Ltd."
+__author_email__ = "tech@asthatrade.com"
+__license__ = "MIT"
