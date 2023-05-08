@@ -1,5 +1,6 @@
 import requests
 import csv
+import datetime
 
 class AsthaTradeVortexAPI:
 
@@ -30,7 +31,10 @@ class AsthaTradeVortexAPI:
     # Transaction type
     TRANSACTION_TYPE_BUY = "BUY"
     TRANSACTION_TYPE_SELL = "SELL"
-    
+
+    QUOTE_MODE_LTP = "ltp"
+    QUOTE_MODE_FULL = "full"
+    QUOTE_MODE_OHLC = "ohlc"
 
     def __init__(self, api_key: str, application_id: str, base_url: str = "https://vortex.restapi.asthatrade.com") -> None:
         """
@@ -46,7 +50,7 @@ class AsthaTradeVortexAPI:
         self.base_url = base_url
         self.access_token = None
 
-    def _make_api_request(self, method: str, endpoint: str, data: dict = None) -> dict:
+    def _make_api_request(self, method: str, endpoint: str, data: dict = None, params=None) -> dict:
         """
         Private method to make HTTP requests to the Astha Trade API.
 
@@ -66,7 +70,7 @@ class AsthaTradeVortexAPI:
         bearer_token = f"Bearer {self.access_token}"
         headers = {"Content-Type": "application/json", "Authorization": bearer_token}
         url = self.base_url + endpoint
-        response = requests.request(method, url, headers=headers, json=data)
+        response = requests.request(method, url, headers=headers, json=data,params=params)
 
         response.raise_for_status()
         return response.json()
@@ -327,6 +331,51 @@ class AsthaTradeVortexAPI:
             "is_amo": is_amo
         }
         return self._make_api_request("POST", endpoint, data=data)
+    
+    def quotes(self, *instruments, mode: str)-> dict: 
+        """
+        Gets quotes of up to 1000 instruments at a time. 
+
+        Args: 
+            instrument(list): List of instruments. The items should be like ( "NSE_EQ-22", "NSE_FO-1234")
+
+        Returns 
+            dict: JSON response containing quotes. It is possible that not all the symbol identifiers you passed had a quote available. Those inputs will be missing from the response.
+            Also, the order of output might be different than the order of input
+        """
+        endpoint = "/data/quotes"
+        i = list(instruments)
+        params = {"q": instruments,"mode": mode}
+        return self._make_api_request("GET", endpoint, data=None,params=params)
+    
+    def historical_candles(self, exchange: str, token: int, to: datetime.datetime , start: datetime.datetime, resolution: str): 
+        """
+        Gets historical candle data of a particular instrument. 
+
+        Args: 
+            exchange (str): Possible values: [NSE_EQ, NSE_FO, NSE_CD or MCX_FO]
+            token (int): Security token of the scrip. It can be found in the scripmaster file
+            to(datetime): datetime up till when you want to receive candles 
+            start(datetime): datetime from when you want to receive candles 
+            resolution(str): resoulution of the candle. can be "1", "2", "3", "4", "5", "10", "15", "30", "45", "60", "120", "180", "240", "1D", "1W", "1M"
+        """
+
+        if not isinstance(exchange, str):
+            raise TypeError("exchange must be a string")
+        if not isinstance(token, int):
+            raise TypeError("token must be an integer")
+        if not isinstance(to,datetime.datetime): 
+            raise TypeError("to must be a datetime")
+        if not isinstance(start,datetime.datetime): 
+            raise TypeError("start must be a datetime")
+        if not isinstance(resolution,str): 
+            raise TypeError("resolution must be string")
+
+        endpoint = "/data/history"
+        params = {"exchange": exchange,"token": token , "to": int(to.timestamp()), "from": int(start.timestamp()), "resolution": resolution}
+        print(params)
+        return self._make_api_request("GET", endpoint, data=None,params=params)
+
     
     def _setup_client_code(self, login_object: dict) -> bool: 
         """ 
