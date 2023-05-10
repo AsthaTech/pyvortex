@@ -11,6 +11,7 @@ pip install vortex-api
 
 ```python 
 from vortex_api import AsthaTradeVortexAPI
+from vortex_api import Constants as Vc
 
 client = AsthaTradeVortexAPI("your api secret","your application id")
 
@@ -19,7 +20,17 @@ client.login("client code","client password","totp")
 
 # Place order 
 
-client.place_order(client.EXCHANGE_NSE_EQUITY,22,client.TRANSACTION_TYPE_BUY,client.PRODUCT_DELIVERY,client.VARIETY_REGULAR_LIMIT_ORDER,1,1700,0,0,"DAY",1,True)
+client.place_order(
+       exchange = Vc.ExchangeTypes.NSE_EQUITY,
+       token = 22,
+       transaction_type =  Vc.TransactionSides.BUY,
+       product = Vc.ProductTypes.DELIVERY,
+       variety = Vc.VarietyTypes.REGULAR_LIMIT_ORDER,
+       quantity = 1,
+       price = 1700.0,
+       trigger_price=0.0,
+       disclosed_quantity= 0,
+       validity = Vc.ValidityTypes.FULL_DAY)
 
 #Get order book 
 client.orders(limit=20,offset=1)

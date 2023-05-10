@@ -6,3 +6,4 @@ vortex_api/__pycache__
 requirements.txt
 build
 dist
+.vscode

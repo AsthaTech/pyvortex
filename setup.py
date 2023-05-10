@@ -32,6 +32,7 @@ setup(
     packages=["vortex_api"],
     install_requires=[
         "requests>=2.25.1",
+        "wrapt-1.15.0"
     ],
     classifiers=[
         "Intended Audience :: Developers",

@@ -33,5 +33,5 @@ Getting started
 
 """
 from __future__ import unicode_literals, absolute_import
-from vortex_api.api import AsthaTradeVortexAPI
-__all__ = [AsthaTradeVortexAPI]
+from vortex_api.api import AsthaTradeVortexAPI,Constants
+__all__ = [AsthaTradeVortexAPI,Constants]
