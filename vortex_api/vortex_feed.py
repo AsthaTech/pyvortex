@@ -169,7 +169,6 @@ class ClientFactory(WebSocketClientFactory,ReconnectingClientFactory):
 
     def __init__(self, *args, **kwargs):
         """Initialize with default callback method values."""
-        self.debug = True
         self.ws = None
         self.on_open = None
         self.on_error = None
@@ -237,7 +236,7 @@ class VortexFeed:
     _message_unsubscribe = "unsubscribe"
 
     def __init__(self, access_token: str, websocket_endpoint="wss://wire.asthatrade.com/ws",reconnect=True, reconnect_max_tries=RECONNECT_MAX_TRIES, reconnect_max_delay=RECONNECT_MAX_DELAY,
-                 connect_timeout=CONNECT_TIMEOUT) -> None:
+                 connect_timeout=CONNECT_TIMEOUT, debug = False) -> None:
         self._maximum_reconnect_max_tries = self.RECONNECT_MAX_TRIES
         self._minimum_reconnect_max_delay = 0 
         if reconnect == False: 
@@ -261,7 +260,7 @@ class VortexFeed:
         self.access_token = access_token
         self.socket_token = self.__getSocketToken__(self.access_token)
 
-        self.debug = True
+        self.debug = debug
         # self.on_price_update = None
         self.on_price_update = None
         self.on_open = None
@@ -279,7 +278,7 @@ class VortexFeed:
         return 
     
     def _create_connection(self, url, **kwargs):
-        self.factory = ClientFactory(url, **kwargs)
+        self.factory = ClientFactory(url,self.debug, **kwargs)
         self.ws = self.factory.ws
         self.factory.debug = self.debug
 
@@ -360,13 +359,13 @@ class VortexFeed:
         if self.factory:
             self.factory.stopTrying()
 
-    def subscribe(self, exchange,token,mode):
+    def subscribe(self, exchange: str,token: int,mode: str)->bool:
         """
         Subscribe to a list of instrument_tokens.
         - `instrument_tokens` is list of instrument instrument_tokens to subscribe
         """
         try:
-            self.ws.sendMessage(six.b(json.dumps({"message_type": self._message_subscribe, "segment_id": exchange,"token": token,"mode": mode})))     
+            self.ws.sendMessage(six.b(json.dumps({"message_type": self._message_subscribe, "exchange": exchange,"token": token,"mode": mode})))     
 
             try: 
                 self.subscribed_tokens[exchange][token] = mode
@@ -379,13 +378,13 @@ class VortexFeed:
             self._close(reason="Error while subscribe: {}".format(str(e)))
             raise
 
-    def unsubscribe(self, exchange,token):
+    def unsubscribe(self, exchange: str,token: int)->bool:
         """
         Unsubscribe the given list of instrument_tokens.
         - `instrument_tokens` is list of instrument_tokens to unsubscribe.
         """
         try:
-            self.ws.sendMessage(six.b(json.dumps({"message_type": self._message_unsubscribe, "segment_id": exchange,"token": token})))            
+            self.ws.sendMessage(six.b(json.dumps({"message_type": self._message_unsubscribe, "exchange": exchange,"token": token})))            
 
             try: 
                 del(self.subscribed_tokens[exchange][token])
@@ -403,21 +402,7 @@ class VortexFeed:
 
         for exchange in self.subscribed_tokens: 
             for token in self.subscribed_tokens[exchange]: 
-                self.subscribe(exchange=exchange, token=token)
-
-        for token in self.subscribed_tokens:
-            m = self.subscribed_tokens[token]
-
-            if not modes.get(m):
-                modes[m] = []
-
-            modes[m].append(token)
-
-        for mode in modes:
-            if self.debug:
-                log.debug("Resubscribe and set mode: {} - {}".format(mode, modes[mode]))
-
-            self.subscribe(modes[mode])
+                self.subscribe(exchange=exchange, token=token,mode=self.subscribed_tokens[exchange][token])
 
     def _on_connect(self, ws, response):
         self.ws = ws

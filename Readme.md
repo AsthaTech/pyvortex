@@ -43,24 +43,38 @@ client.orders(limit=20,offset=1)
 ```
 from vortex_api import VortexFeed
 from vortex_api import Constants as Vc
+import time
 
 def main():
-       # Get access token from any of the login methods
-       wire = VortexFeed(access_token) 
+    # Get access token from any of the login methods
+    wire = VortexFeed(access_token) 
 
-       wire.on_price_update = on_price_update
-       wire.on_order_update = on_order_update
-       wire.on_connect = on_connect
+    wire.on_price_update = on_price_update
+    wire.on_order_update = on_order_update
+    wire.on_connect = on_connect
+    wire.connect(threaded=True) 
+    # If you make threaded = False, anything after this line will not execute
+
+    time.sleep(10)
+    
+    wire.unsubscribe(Vc.ExchangeTypes.NSE_EQUITY, 26000)
+    wire.unsubscribe(Vc.ExchangeTypes.NSE_EQUITY, 26009)
+    wire.unsubscribe(Vc.ExchangeTypes.NSE_EQUITY, 2885)
+
 
 def on_price_update(ws,data): 
-       print(data)
+    print(data)
 
 def on_order_update(ws,data): 
-       print(data)
+    print(data)
 
 def on_connect(ws, response):
-       ws.subscribe(Vc.ExchangeTypes.NSE_EQUITY, 26000) # Subscribe to NIFTY 50 
-       ws.subscribe(Vc.ExchangeTypes.NSE_EQUITY, 26000) # Subscribe to BANKNIFTY 
+    ws.subscribe(Vc.ExchangeTypes.NSE_EQUITY, 26000, Vc.QuoteModes.LTP) #Subscribe to NIFTY 
+    ws.subscribe(Vc.ExchangeTypes.NSE_EQUITY, 26009,Vc.QuoteModes.OHLCV) # Subscribe to BANKNIFTY 
+    ws.subscribe(Vc.ExchangeTypes.NSE_EQUITY, 2885,Vc.QuoteModes.FULL) # Subscribe to RELIANCE 
+
+if __name__ == "__main__":
+    main()
 
 ```
 Refer to the [python document](https://vortex.asthatrade.com/docs/pyvortex/vortex_api.html) for all methods and features
