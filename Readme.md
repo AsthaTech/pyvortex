@@ -40,6 +40,9 @@ client.orders(limit=20,offset=1)
 
 # Connecting to websocket
 
+Using the feed, you can listen to both price quote changes and order/trade updates. You need to define your own callbacks for `on_price_update`
+and `on_order_update`. The packet structure for `on_order_update` is the same as that received in postbacks and is available [here](https://vortex.asthatrade.com/docs/postbacks/)
+
 ```
 from vortex_api import VortexFeed
 from vortex_api import Constants as Vc
