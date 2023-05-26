@@ -501,25 +501,26 @@ class VortexFeed:
                     "volume": volume
                 })
             elif len(packet) == 263:
-                format_string = "<7siiidiidqqidddddiidiidiidiidiidiidiidiidiidiiii"
+                format_string = "<7sididdddiiidqqidiidiidiidiidiidiidiidiidiidiiii"
                 unpacked_data = struct.unpack(format_string, packet)
                 exchange = unpacked_data[0].decode("utf-8").rstrip('\x00')
                 data.append({
                     "exchange" : exchange, 
                     "token": unpacked_data[1],
-                    "last_trade_time": unpacked_data[2],
-                    "last_update_time": unpacked_data[3],
-                    "last_trade_price": unpacked_data[4],
-                    "last_trade_quantity": unpacked_data[5],
-                    "volume": unpacked_data[6],
-                    "average_trade_price": unpacked_data[7],
-                    "total_buy_quantity": unpacked_data[8],
-                    "total_sell_quantity": unpacked_data[9],
-                    "open_interest": unpacked_data[10],
-                    "open_price": unpacked_data[11],
-                    "high_price": unpacked_data[12],
-                    "low_price": unpacked_data[13],
-                    "close_price": unpacked_data[14],
+                    "last_trade_price": unpacked_data[2],
+                    "last_trade_time": unpacked_data[3],
+                    "open_price": unpacked_data[4],
+                    "high_price": unpacked_data[5],
+                    "low_price": unpacked_data[6],
+                    "close_price": unpacked_data[7],
+                    "volume": unpacked_data[8],
+                    "last_update_time": unpacked_data[9],
+                    "last_trade_quantity": unpacked_data[10],
+                    "average_trade_price": unpacked_data[11],
+                    "total_buy_quantity": unpacked_data[12],
+                    "total_sell_quantity": unpacked_data[13],
+                    "open_interest": unpacked_data[14],
+                    
                     "depth": {
                         "buy": [{
                             "price": unpacked_data[15],
@@ -563,7 +564,9 @@ class VortexFeed:
                             "quantity": unpacked_data[43],
                             "orders": unpacked_data[44],
                         }]
-                    }
+                    }, 
+                    "dpr_high": unpacked_data[45],
+                    "dpr_low": unpacked_data[46],
                 })
         return data
 
