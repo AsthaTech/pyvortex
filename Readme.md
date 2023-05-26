@@ -37,5 +37,31 @@ client.orders(limit=20,offset=1)
 
 
 ```
+
+# Connecting to websocket
+
+```
+from vortex_api import VortexFeed
+from vortex_api import Constants as Vc
+
+def main():
+       # Get access token from any of the login methods
+       wire = VortexFeed(access_token) 
+
+       wire.on_price_update = on_price_update
+       wire.on_order_update = on_order_update
+       wire.on_connect = on_connect
+
+def on_price_update(ws,data): 
+       print(data)
+
+def on_order_update(ws,data): 
+       print(data)
+
+def on_connect(ws, response):
+       ws.subscribe(Vc.ExchangeTypes.NSE_EQUITY, 26000) # Subscribe to NIFTY 50 
+       ws.subscribe(Vc.ExchangeTypes.NSE_EQUITY, 26000) # Subscribe to BANKNIFTY 
+
+```
 Refer to the [python document](https://vortex.asthatrade.com/docs/pyvortex/vortex_api.html) for all methods and features
 
