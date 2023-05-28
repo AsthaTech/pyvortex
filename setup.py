@@ -32,7 +32,12 @@ setup(
     packages=["vortex_api"],
     install_requires=[
         "requests>=2.25.1",
-        "wrapt>=1.15.0"
+        "wrapt>=1.15.0",
+        "six>=1.11.0",
+        "pyOpenSSL>=17.5.0",
+        "python-dateutil>=2.6.1",
+        "autobahn[twisted]==19.11.2",
+        "service_identity>=18.1.0"
     ],
     classifiers=[
         "Intended Audience :: Developers",
