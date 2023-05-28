@@ -84,7 +84,6 @@ class ClientProtocol(WebSocketClientProtocol):
             code: The close code.
             reason: The close reason.
         """
-        print("was_clean", was_clean)
         if not was_clean:
             if self.factory.on_error:
                 self.factory.on_error(self, code, reason)
