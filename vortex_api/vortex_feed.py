@@ -475,8 +475,8 @@ class VortexFeed:
         data = []
 
         for packet in packets:
-            if len(packet) == 19:
-                format_string = "<7sid"
+            if len(packet) == 22:
+                format_string = "<10sid"
                 exchange, token, last_trade_price = struct.unpack(format_string, packet)
                 exchange = exchange.decode("utf-8").rstrip('\x00')
                 data.append({
@@ -484,8 +484,8 @@ class VortexFeed:
                     "token": token,
                     "last_trade_price": last_trade_price
                 })
-            elif len(packet) == 59: 
-                format_string = "<7sididdddi"
+            elif len(packet) == 62: 
+                format_string = "<10sididdddi"
                 exchange, token, last_trade_price, last_trade_time, open_price, high_price, low_price, close_price, volume = struct.unpack(format_string, packet)
                 exchange = exchange.decode("utf-8").rstrip('\x00')
                 data.append({
@@ -499,8 +499,8 @@ class VortexFeed:
                     "close_price": close_price,
                     "volume": volume
                 })
-            elif len(packet) == 263:
-                format_string = "<7sididdddiiidqqidiidiidiidiidiidiidiidiidiidiiii"
+            elif len(packet) == 266:
+                format_string = "<10sididdddiiidqqidiidiidiidiidiidiidiidiidiidiiii"
                 unpacked_data = struct.unpack(format_string, packet)
                 exchange = unpacked_data[0].decode("utf-8").rstrip('\x00')
                 data.append({
