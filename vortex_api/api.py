@@ -441,6 +441,19 @@ class AsthaTradeVortexAPI:
         endpoint = "/portfolio/holdings"
         return self._make_api_request("GET", endpoint)
     
+    def trades(self) -> dict:
+        """
+        Method to get today's trades of the user using the Astha Trade API.
+
+        Documentation:    
+            https://vortex.asthatrade.com/docs/positions/#get-trades
+
+        Returns:
+            dict: Dictionary containing the response data from the API.
+        """
+        endpoint = "/trades"
+        return self._make_api_request("GET", endpoint)
+    
     def funds(self) -> dict:
         """
         Method to get the funds of the user using the Astha Trade API.
